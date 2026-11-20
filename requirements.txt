@@ -1,0 +1,19 @@
+# Web Framework & API Server
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pydantic>=2.10.0
+
+# Browser Automation (CM Helpline Portal Scraping)
+# Note: Run 'playwright install chromium' after installing requirements
+playwright>=1.40.0
+
+# Data Processing & Excel Handling
+pandas>=2.2.0
+openpyxl>=3.1.0
+
+# Environment Configuration (.env support)
+python-dotenv>=1.0.0
+
+# Telegram Bot Client
+Telethon>=1.35.0
+ playwright install chromium   
