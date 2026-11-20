@@ -16,7 +16,9 @@ def save_cmhelpline_storage_state(
     username=None,
     password=None,
     headless=True,
-    screenshot_on_error=True
+    screenshot_on_error=True,
+    captcha_value=None,
+    captcha_callback=None
 ):
     """
     Automates the login to CM Helpline portal and saves the browser storage state (session/cookies) to a JSON file.
@@ -93,8 +95,19 @@ def save_cmhelpline_storage_state(
                     pass
 
             print(f"CAPTCHA_READY:{captcha_local_path}", flush=True)
-            print("\nPlease view the CAPTCHA image and enter the displayed characters:", flush=True)
-            captcha_input = input("Enter CAPTCHA: ").strip()
+            if captcha_value:
+                captcha_input = str(captcha_value).strip()
+                print(f"Using provided CAPTCHA: {captcha_input}", flush=True)
+            elif callable(captcha_callback):
+                print("Requesting CAPTCHA via callback...", flush=True)
+                captcha_input = str(captcha_callback(captcha_local_path)).strip()
+                print(f"Callback returned CAPTCHA: {captcha_input}", flush=True)
+            else:
+                print("\nPlease view the CAPTCHA image and enter the displayed characters:", flush=True)
+                try:
+                    captcha_input = input("Enter CAPTCHA: ").strip()
+                except Exception:
+                    captcha_input = ""
             captcha_field = page.wait_for_selector('//input[@id="txtCaptcha"]', timeout=5000)
             captcha_field.fill(captcha_input)
             print("CAPTCHA entered.", flush=True)

@@ -86,10 +86,21 @@ def download_Final_cmhelpline():
     if os.path.exists(concatenconcatenated_file):
         os.remove(concatenconcatenated_file)
    
-    df2 = pd.read_excel(os.path.join(cmhelpline_dir, 'cmhelpline_L2.xls'), sheet_name='Data')
-    df3 = pd.read_excel(os.path.join(cmhelpline_dir, 'cmhelpline_L3.xls'), sheet_name='Data')
-    df4 = pd.read_excel(os.path.join(cmhelpline_dir, 'cmhelpline_L4.xls'), sheet_name='Data')
-    df = pd.concat([df2, df3, df4], ignore_index=True)
+    dfs = []
+    for f in ['cmhelpline_L2.xls', 'cmhelpline_L3.xls', 'cmhelpline_L4.xls']:
+        fp = os.path.join(cmhelpline_dir, f)
+        if os.path.exists(fp):
+            try:
+                dfs.append(pd.read_excel(fp, sheet_name='Data'))
+            except Exception:
+                try:
+                    dfs.append(pd.read_excel(fp))
+                except Exception:
+                    pass
+    if dfs:
+        df = pd.concat(dfs, ignore_index=True)
+    else:
+        df = pd.DataFrame()
     df.to_excel(concatenconcatenated_file, index=False)
     # os.remove(os.path.join(cmhelpline_dir, 'cmhelpline_L2.xls'))
     # os.remove(os.path.join(cmhelpline_dir, 'cmhelpline_L3.xls'))

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CM Helpline Complaint Downloader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: block;
+    }
+
+    .header-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.875rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      transition: all 0.2s;
+    }
+
+    .header-links a:hover {
+      background: #334155;
+      color: white;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card-full {
+      grid-column: 1 / -1;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .badge-success {
+      background: var(--success-light);
+      color: #065f46;
+    }
+    .badge-success .badge-dot { background: var(--success); }
+
+    .badge-danger {
+      background: var(--danger-light);
+      color: #991b1b;
+    }
+    .badge-danger .badge-dot { background: var(--danger); }
+
+    .badge-warning {
+      background: var(--warning-light);
+      color: #92400e;
+    }
+    .badge-warning .badge-dot { background: var(--warning); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover:not(:disabled) {
+      background: #059669;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    .btn-lg {
+      padding: 0.85rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    /* Status Grid */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .status-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+
+    .status-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .status-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+
+    /* Captcha Modal / Banner */
+    .captcha-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 2px dashed #93c5fd;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .captcha-box.visible {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .captcha-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .captcha-header h3 {
+      font-size: 0.95rem;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .captcha-form {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .captcha-image-wrapper {
+      background: white;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      min-height: 50px;
+    }
+
+    .captcha-image-wrapper img {
+      max-height: 48px;
+      display: block;
+    }
+
+    .captcha-input {
+      padding: 0.65rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 2px solid #bfdbfe;
+      border-radius: 8px;
+      width: 160px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .captcha-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .progress-track {
+      background: #e2e8f0;
+      height: 10px;
+      border-radius: 9999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-fill.active {
+      background-size: 30px 30px;
+      background-image: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+      );
+      animation: progress-stripes 1.2s linear infinite;
+    }
+
+    @keyframes progress-stripes {
+      from { background-position: 30px 0; }
+      to { background-position: 0 0; }
+    }
+
+    /* Logs Console */
+    .log-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      padding: 1rem;
+      border-radius: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .log-entry {
+      margin-bottom: 0.2rem;
+    }
+    .log-entry.success { color: #34d399; }
+    .log-entry.warning { color: #fbbf24; }
+    .log-entry.error { color: #f87171; }
+    .log-entry.info { color: #60a5fa; }
+
+    /* Files Table */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .file-name {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .file-tag {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .tag-l1 { background: #dbeafe; color: #1e40af; }
+    .tag-l2 { background: #e0e7ff; color: #3730a3; }
+    .tag-l3 { background: #fae8ff; color: #86198f; }
+    .tag-l4 { background: #ffedd5; color: #9a3412; }
+    .tag-final { background: #dcfce7; color: #166534; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .checkbox-row label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">CM</div>
+      <div>
+        <h1>CM Helpline Complaint Downloader</h1>
+        <span>Madhya Pradesh Grievance Portal Automation</span>
+      </div>
+    </div>
+    <div class="header-links">
+      <a href="https://cmhelpline.mp.gov.in/MIS/Default.aspx" target="_blank" rel="noopener">Open Portal ↗</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Card 1: Session Status & Auth -->
+    <div class="card">
+      <div class="card-title">
+        <h2>
+          <span>🔐</span> Portal Session
+        </h2>
+        <span id="sessionBadge" class="badge badge-warning">
+          <span class="badge-dot"></span> Checking...
+        </span>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-label">Configured Username</div>
+          <div id="statusUsername" class="status-value">-</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">Session State File</div>
+          <div id="statusStateFile" class="status-value" style="font-size: 0.8rem;">state_CM.json</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">Session Validity</div>
+          <div id="statusValidity" class="status-value">Verifying...</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button id="btnCheckSession" class="btn btn-outline btn-sm" onclick="checkSessionStatus()">
+          🔄 Verify Session
+        </button>
+        <button id="btnManualLogin" class="btn btn-outline btn-sm" onclick="triggerManualLogin()">
+          🔑 Re-authenticate / New Login
+        </button>
+      </div>
+
+      <!-- CAPTCHA Prompt Banner -->
+      <div id="captchaBox" class="captcha-box">
+        <div class="captcha-header">
+          <h3>
+            <span>🛡️</span> Authentication Required (CAPTCHA)
+          </h3>
+          <span style="font-size: 0.75rem; color: #64748b;">Session expired or missing</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #334155;">
+          Please enter the characters from the image below to log in to the CM Helpline portal and proceed:
+        </p>
+        <div class="captcha-form">
+          <div class="captcha-image-wrapper">
+            <img id="captchaImg" src="" alt="CAPTCHA Image">
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="refreshCaptcha()" title="Refresh CAPTCHA">
+            🔄 Refresh
+          </button>
+          <input type="text" id="captchaInput" class="captcha-input" maxlength="8" placeholder="CAPTCHA" autocomplete="off">
+          <button id="btnSubmitCaptcha" type="button" class="btn btn-primary" onclick="submitCaptcha()">
+            Submit & Continue
+          </button>
+        </div>
+        <div id="captchaError" style="color: var(--danger); font-size: 0.8rem; display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Card 2: Download Control & Progress -->
+    <div class="card">
+      <div class="card-title">
+        <h2>
+          <span>⚡</span> Download Controls
+        </h2>
+        <span id="taskStatusBadge" class="badge badge-success">
+          <span class="badge-dot"></span> Idle
+        </span>
+      </div>
+
+      <p style="font-size: 0.875rem; color: var(--text-muted);">
+        Downloads L1, L2, L3, and L4 complaint Excel files. If your session is missing or expired, it automatically re-authenticates.
+      </p>
+
+      <div class="checkbox-row">
+        <label>
+          <input type="checkbox" id="chkConsolidate" checked>
+          <span>Auto-consolidate Excel (L-1.xlsx & high_level.xlsx)</span>
+        </label>
+        <label>
+          <input type="checkbox" id="chkHeadless" checked>
+          <span>Headless Browser</span>
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btnStartDownload" class="btn btn-primary btn-lg" style="flex: 1;" onclick="startDownload()">
+          <span>📥</span> Download L1, L2, L3 & L4 Complaints
+        </button>
+      </div>
+
+      <!-- Progress Track -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span id="progressMessage" style="font-weight: 500;">Ready to start</span>
+          <span id="progressPercent" style="font-weight: 600; color: var(--primary);">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Real-time Log Feed -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+          <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">
+            Activity Log
+          </span>
+          <button class="btn btn-outline btn-sm" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;" onclick="clearLogs()">
+            Clear
+          </button>
+        </div>
+        <div id="logConsole" class="log-box">
+          <div class="log-entry info">[System] Ready. Click 'Download' to begin.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Downloaded Excel Files (Full Width) -->
+    <div class="card card-full">
+      <div class="card-title">
+        <h2>
+          <span>📁</span> Downloaded Complaints Files
+        </h2>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-outline btn-sm" onclick="processExcelFiles()" title="Re-run Excel data formatting">
+            📊 Process / Merge Excel
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="loadFilesList()">
+            🔄 Refresh Files
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Category</th>
+              <th>File Size</th>
+              <th>Last Modified</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="filesTableBody">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                Loading files list...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    CM Helpline Portal Automation &bull; Backend powered by FastAPI &bull; Automation powered by Playwright
+  </footer>
+
+  <script>
+    let pollInterval = null;
+    let isDownloading = false;
+
+    // On page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSessionStatus();
+      loadFilesList();
+      checkDownloadStatus();
+    });
+
+    // Check Session Status
+    async function checkSessionStatus() {
+      const badge = document.getElementById('sessionBadge');
+      const validityEl = document.getElementById('statusValidity');
+      const userEl = document.getElementById('statusUsername');
+      const btn = document.getElementById('btnCheckSession');
+
+      btn.disabled = true;
+      validityEl.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch('/api/session/status');
+        const data = await res.json();
+
+        userEl.textContent = data.username || 'Not set in .env';
+
+        if (data.valid) {
+          badge.className = 'badge badge-success';
+          badge.innerHTML = '<span class="badge-dot"></span> Active & Valid';
+          validityEl.textContent = 'Active (Ready)';
+          validityEl.style.color = 'var(--success)';
+          document.getElementById('captchaBox').classList.remove('visible');
+        } else {
+          badge.className = 'badge badge-danger';
+          badge.innerHTML = '<span class="badge-dot"></span> Expired / Missing';
+          validityEl.textContent = data.exists ? 'Expired' : 'File Missing';
+          validityEl.style.color = 'var(--danger)';
+        }
+      } catch (err) {
+        badge.className = 'badge badge-warning';
+        badge.innerHTML = '<span class="badge-dot"></span> Check Failed';
+        validityEl.textContent = 'Error checking';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Start Download
+    async function startDownload() {
+      const btn = document.getElementById('btnStartDownload');
+      const consolidate = document.getElementById('chkConsolidate').checked;
+      const headless = document.getElementById('chkHeadless').checked;
+
+      btn.disabled = true;
+      appendLog('Starting download process...', 'info');
+
+      try {
+        const res = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ consolidate, headless })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          appendLog(data.message || 'Download initiated.', 'info');
+          startPollingProgress();
+        } else {
+          appendLog(`Error starting download: ${data.detail || 'Unknown error'}`, 'error');
+          btn.disabled = false;
+        }
+      } catch (err) {
+        appendLog(`Network error starting download: ${err.message}`, 'error');
+        btn.disabled = false;
+      }
+    }
+
+    // Polling progress from backend
+    function startPollingProgress() {
+      if (pollInterval) clearInterval(pollInterval);
+      isDownloading = true;
+      document.getElementById('progressFill').classList.add('active');
+
+      pollInterval = setInterval(async () => {
+        await checkDownloadStatus();
+      }, 1500);
+    }
+
+    async function checkDownloadStatus() {
+      try {
+        const res = await fetch('/api/download/status');
+        const data = await res.json();
+
+        // Update progress bar
+        const percent = data.percent || 0;
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').textContent = percent + '%';
+        document.getElementById('progressMessage').textContent = data.message || 'Processing...';
+
+        // Update task badge
+        const badge = document.getElementById('taskStatusBadge');
+        if (data.status === 'running') {
+          badge.className = 'badge badge-warning';
+          badge.innerHTML = '<span class="badge-dot"></span> Running';
+        } else if (data.status === 'completed') {
+          badge.className = 'badge badge-success';
+          badge.innerHTML = '<span class="badge-dot"></span> Completed';
+        } else if (data.status === 'error') {
+          badge.className = 'badge badge-danger';
+          badge.innerHTML = '<span class="badge-dot"></span> Error';
+        } else if (data.status === 'waiting_captcha') {
+          badge.className = 'badge badge-warning';
+          badge.innerHTML = '<span class="badge-dot"></span> Waiting for CAPTCHA';
+        } else {
+          badge.className = 'badge badge-success';
+          badge.innerHTML = '<span class="badge-dot"></span> Idle';
+        }
+
+        // Render logs if available
+        if (data.logs && data.logs.length > 0) {
+          renderLogs(data.logs);
+        }
+
+        // Check if waiting for CAPTCHA
+        const captchaBox = document.getElementById('captchaBox');
+        if (data.status === 'waiting_captcha' && data.captcha_image) {
+          captchaBox.classList.add('visible');
+          document.getElementById('captchaImg').src = data.captcha_image;
+          document.getElementById('captchaInput').focus();
+        } else if (data.status !== 'waiting_captcha') {
+          captchaBox.classList.remove('visible');
+        }
+
+        // Check completion or error
+        if (data.status === 'completed' || data.status === 'error') {
+          if (pollInterval) clearInterval(pollInterval);
+          isDownloading = false;
+          document.getElementById('btnStartDownload').disabled = false;
+          document.getElementById('progressFill').classList.remove('active');
+          loadFilesList();
+          checkSessionStatus();
+        }
+      } catch (err) {
+        console.error('Status poll error:', err);
+      }
+    }
+
+    // Submit CAPTCHA
+    async function submitCaptcha() {
+      const input = document.getElementById('captchaInput');
+      const val = input.value.trim();
+      const errEl = document.getElementById('captchaError');
+      const btn = document.getElementById('btnSubmitCaptcha');
+
+      if (!val) {
+        errEl.textContent = 'Please enter the CAPTCHA characters.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch('/api/captcha/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ captcha: val })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          appendLog(`CAPTCHA submitted successfully. Authenticating...`, 'info');
+          input.value = '';
+          document.getElementById('captchaBox').classList.remove('visible');
+          startPollingProgress();
+        } else {
+          errEl.textContent = data.detail || 'Failed to submit CAPTCHA';
+          errEl.style.display = 'block';
+        }
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit & Continue';
+      }
+    }
+
+    // Refresh CAPTCHA / Trigger manual login
+    async function triggerManualLogin() {
+      const captchaBox = document.getElementById('captchaBox');
+      captchaBox.classList.add('visible');
+      appendLog('Requesting fresh CAPTCHA for portal login...', 'info');
+      await refreshCaptcha();
+    }
+
+    async function refreshCaptcha() {
+      const img = document.getElementById('captchaImg');
+      const errEl = document.getElementById('captchaError');
+      errEl.style.display = 'none';
+
+      try {
+        appendLog('Opening login page to capture new CAPTCHA...', 'info');
+        const res = await fetch('/api/captcha/request', { method: 'POST' });
+        const data = await res.json();
+
+        if (res.ok && data.captcha_image) {
+          img.src = data.captcha_image;
+          document.getElementById('captchaBox').classList.add('visible');
+          document.getElementById('captchaInput').value = '';
+          document.getElementById('captchaInput').focus();
+          appendLog('CAPTCHA loaded. Please enter the characters.', 'info');
+          startPollingProgress();
+        } else {
+          errEl.textContent = data.detail || 'Could not load CAPTCHA';
+          errEl.style.display = 'block';
+        }
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+      }
+    }
+
+    // Load Files List
+    async function loadFilesList() {
+      const tbody = document.getElementById('filesTableBody');
+      try {
+        const res = await fetch('/api/files');
+        const files = await res.json();
+
+        if (!files || files.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                No files downloaded yet.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = files.map(f => {
+          let tagClass = 'tag-l1';
+          let tagLabel = 'Raw XLS';
+          if (f.name.includes('_1.')) { tagClass = 'tag-l1'; tagLabel = 'Level 1'; }
+          else if (f.name.includes('_L2.')) { tagClass = 'tag-l2'; tagLabel = 'Level 2'; }
+          else if (f.name.includes('_L3.')) { tagClass = 'tag-l3'; tagLabel = 'Level 3'; }
+          else if (f.name.includes('_L4.')) { tagClass = 'tag-l4'; tagLabel = 'Level 4'; }
+          else if (f.name.includes('L-1.')) { tagClass = 'tag-final'; tagLabel = 'L-1 Workbook'; }
+          else if (f.name.includes('high_level.')) { tagClass = 'tag-final'; tagLabel = 'High Level'; }
+          else if (f.name.includes('concatenated')) { tagClass = 'tag-final'; tagLabel = 'Concatenated'; }
+
+          return `
+            <tr>
+              <td>
+                <div class="file-name">
+                  <span>📊</span>
+                  <strong>${f.name}</strong>
+                </div>
+              </td>
+              <td><span class="file-tag ${tagClass}">${tagLabel}</span></td>
+              <td>${f.size_formatted}</td>
+              <td style="color: var(--text-muted);">${f.modified}</td>
+              <td style="text-align: right;">
+                <a href="/api/files/download/${encodeURIComponent(f.name)}" class="btn btn-outline btn-sm" download>
+                  ⬇ Download
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--danger); padding: 1.5rem;">
+              Failed to load files: ${err.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Process / Consolidate Excel Files
+    async function processExcelFiles() {
+      appendLog('Triggering manual Excel consolidation...', 'info');
+      try {
+        const res = await fetch('/api/process-excel', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+          appendLog(data.message || 'Excel processing completed.', 'success');
+          loadFilesList();
+        } else {
+          appendLog(`Error: ${data.detail}`, 'error');
+        }
+      } catch (err) {
+        appendLog(`Error processing Excel files: ${err.message}`, 'error');
+      }
+    }
+
+    // Logger helpers
+    function appendLog(text, type = 'info') {
+      const consoleEl = document.getElementById('logConsole');
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.textContent = `[${time}] ${text}`;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function renderLogs(logs) {
+      const consoleEl = document.getElementById('logConsole');
+      consoleEl.innerHTML = '';
+      logs.forEach(l => {
+        const div = document.createElement('div');
+        div.className = `log-entry ${l.type || 'info'}`;
+        div.textContent = `[${l.time}] ${l.message}`;
+        consoleEl.appendChild(div);
+      });
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById('logConsole').innerHTML = '';
+    }
+  </script>
+</body>
+</html>

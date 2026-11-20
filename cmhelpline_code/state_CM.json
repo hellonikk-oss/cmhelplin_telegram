@@ -5,14 +5,14 @@
       "value": "1",
       "domain": "cmhelpline.mp.gov.in",
       "path": "/MIS",
-      "expires": 1795255982,
+      "expires": 1795262148,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "ASP.NET_SessionId",
-      "value": "xemr4xf51crvnlk5l3tjsbkm",
+      "value": "ggqfqwblrjcvocshkzipnupf",
       "domain": "cmhelpline.mp.gov.in",
       "path": "/",
       "expires": -1,
